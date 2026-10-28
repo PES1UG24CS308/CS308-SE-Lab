@@ -9,6 +9,7 @@ SPIKE_LIMIT = 500
 TIER_1_UNITS = 100
 TIER_2_UNITS = 200
 
+
 def record_reading(meters, meter_id, units, history=None):
     """Add units to a meter, log the reading and return the history."""
     if units < 0:
@@ -19,6 +20,7 @@ def record_reading(meters, meter_id, units, history=None):
     meters[meter_id] = meters.get(meter_id, 0) + units
     return history
 
+
 def compute_bill(meters, meter_id, tier_rates):
     """Return the three-tier bill for a meter."""
     units = meters[meter_id]
@@ -28,13 +30,16 @@ def compute_bill(meters, meter_id, tier_rates):
     slabs = (slab_1, slab_2, slab_3)
     return sum(u * r for u, r in zip(slabs, tier_rates))
 
+
 def raise_rates(rates, percent):
     """Return a new list of rates increased by the given percentage."""
     return [rate * (1 + percent / 100) for rate in rates]
 
+
 def flag_spikes(meters, limit=SPIKE_LIMIT):
     """Return the ids of meters whose total exceeds the limit."""
     return [meter for meter, total in meters.items() if total > limit]
+
 
 def load_meter_data(file="meters.json"):
     """Load meter totals from disk, or return an empty dict."""
@@ -44,10 +49,12 @@ def load_meter_data(file="meters.json"):
     except (OSError, json.JSONDecodeError):
         return {}
 
+
 def save_meter_data(meters, file="meters.json"):
     """Write meter totals to disk."""
     with open(file, "w", encoding="utf-8") as handle:
         json.dump(meters, handle)
+
 
 def parse_units(text):
     """Convert user input to a finite number of units."""
@@ -55,6 +62,7 @@ def parse_units(text):
     if not math.isfinite(value):
         raise ValueError("units must be a finite number")
     return value
+
 
 def main():
     """Run the demo."""
@@ -79,4 +87,6 @@ def main():
     meters = load_meter_data()
     print(f"Bill M-01 after reload: {compute_bill(meters, 'M-01', rates):.2f}")
 
-main()
+
+if __name__ == "__main__":
+    main()
