@@ -1,4 +1,5 @@
 import json
+import math
 import sys
 from datetime import datetime
 
@@ -49,6 +50,13 @@ def save_meter_data(file="meters.json"):
     f.write(json.dumps(meters))
     f.close()
 
+def parse_units(text):
+    """Convert user input to a finite number of units."""
+    value = float(text)
+    if not math.isfinite(value):
+        raise ValueError("units must be a finite number")
+    return value
+
 def main():
     record_reading("M-01", 120)
     record_reading("M-02", 640)
@@ -59,8 +67,11 @@ def main():
     print("Bill M-01: %.2f" % compute_bill("M-01", rates))
     print("Bill M-03: %.2f" % compute_bill("M-03", rates))
     print("Spikes:", flag_spikes())
-    adjustment = input("Extra units for M-01 as an expression (Enter for 0): ") or "0"
-    record_reading("M-01", eval(adjustment))
+    adjustment = input("Extra units for M-01 (Enter for 0): ") or "0"
+    try:
+        record_reading("M-01", parse_units(adjustment))
+    except ValueError as err:
+        print("Invalid input:", err)
     save_meter_data()
     load_meter_data()
     print("Bill M-01 after reload: %.2f" % compute_bill("M-01", rates))
